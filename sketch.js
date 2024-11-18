@@ -5,6 +5,7 @@ let blockColors = [];
 let currentBlock = 0;
 let isEmpty = [true,true,true];
 let gameOverFlag = false;
+let combo = 1;
 
 
 function setup() {
@@ -43,7 +44,7 @@ function draw() {
   fill(0);
   textSize(24);
   textAlign(CENTER);
-  text("Score: " + score, width/2, 25);
+  text("Score: " + score + "    Combo: " + combo, width/2, 25);
 
 
   drawBoard();
@@ -93,7 +94,7 @@ function drawBlocks() {
 
 function randomizeBlocks() {
   for(let i = 0; i<3; i++){
-  let type = random([1,2,3,4,5]);
+  let type = random([1,2,3,4,5,6,7,8]);
   blockColors[i] = random(['red', 'green', 'blue', 'yellow', 'purple', 'orange']);
     switch(type){
       case 1:
@@ -119,9 +120,9 @@ function randomizeBlocks() {
       case 3:
         blocks[i]= [[0,0,0,0,0,0,0,0],
                     [0,0,0,0,0,0,0,0],
-                    [0,0,0,1,1,1,0,0],
-                    [0,0,0,1,1,1,0,0],
-                    [0,0,0,1,1,1,0,0],
+                    [0,0,1,1,1,0,0,0],
+                    [0,0,1,1,1,0,0,0],
+                    [0,0,1,1,1,0,0,0],
                     [0,0,0,0,0,0,0,0],
                     [0,0,0,0,0,0,0,0],
                     [0,0,0,0,0,0,0,0]];
@@ -138,7 +139,17 @@ function randomizeBlocks() {
                     break;
       case 5:
         blocks[i]= [[0,0,0,0,0,0,0,0],
+                    [0,0,0,1,0,0,0,0],
+                    [0,0,0,1,0,0,0,0],
+                    [0,0,0,1,0,0,0,0],
+                    [0,0,0,1,0,0,0,0],
+                    [0,0,0,1,0,0,0,0],
                     [0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0]];
+                    break;
+      case 6:
+        blocks[i]= [[0,0,0,0,0,0,0,0],
+                    [0,0,0,1,0,0,0,0],
                     [0,0,0,1,0,0,0,0],
                     [0,0,0,1,0,0,0,0],
                     [0,0,0,1,0,0,0,0],
@@ -146,8 +157,36 @@ function randomizeBlocks() {
                     [0,0,0,1,0,0,0,0],
                     [0,0,0,0,0,0,0,0]];
                     break;
-
-
+      case 6:
+        blocks[i]= [[0,0,0,0,0,0,0,0],
+                    [0,0,0,1,0,0,0,0],
+                    [0,0,0,1,0,0,0,0],
+                    [0,0,0,1,0,0,0,0],
+                    [0,0,0,1,0,0,0,0],
+                    [0,0,0,1,0,0,0,0],
+                    [0,0,0,1,0,0,0,0],
+                    [0,0,0,0,0,0,0,0]];
+                    break;
+                    case 7:
+                      blocks[i]= [[0,0,0,0,0,0,0,0],
+                                  [0,0,0,0,0,0,0,0],
+                                  [0,0,0,0,0,0,0,0],
+                                  [0,1,1,1,1,1,1,0],
+                                  [0,0,0,0,0,0,0,0],
+                                  [0,0,0,0,0,0,0,0],
+                                  [0,0,0,0,0,0,0,0],
+                                  [0,0,0,0,0,0,0,0]];
+                                  break;
+                                  case 8:
+                      blocks[i]= [[0,0,0,0,0,0,0,0],
+                                  [0,0,0,0,0,0,0,0],
+                                  [0,0,0,0,0,0,0,0],
+                                  [0,1,1,1,1,1,0,0],
+                                  [0,0,0,0,0,0,0,0],
+                                  [0,0,0,0,0,0,0,0],
+                                  [0,0,0,0,0,0,0,0],
+                                  [0,0,0,0,0,0,0,0]];
+                                  break;
     }
     isEmpty[i]=false;
   }
@@ -237,6 +276,11 @@ function drawPreview() {
 
 
 function checkForLines() {
+  let rows = [];
+  let cols = [];
+  let numLines = 0;
+  let currentScore = score;
+
   //Checks for vertical lines
   for(let i = 0; i<8; i++){
     let line = true;
@@ -246,10 +290,9 @@ function checkForLines() {
       }
     }
     if(line){
-      score+=50;
-      for(let j = 0; j<8; j++){
-        board[i][j] = 0;
-      }
+      rows[i] = true;
+    } else {
+      rows[i] = false;
     }
   }
 
@@ -263,12 +306,32 @@ function checkForLines() {
       }
     }
     if(line){
-      score+=50;
+      cols[i] = true;
+    } else {
+      cols[i] = false;
+    }
+  }
+
+  //Remove the lines that are complete
+  for(let i = 0; i<8; i++){
+    if(rows[i]){
+      numLines++;
+      for(let j = 0; j<8; j++){
+        board[i][j] = 0;
+      }
+    }
+    if(cols[i]){
+      numLines++;
       for(let j = 0; j<8; j++){
         board[j][i] = 0;
       }
     }
   }
+
+  //Add the score and combos
+  score = score + (10 + 10*combo)*numLines;
+  if(score>currentScore) combo++;
+  else combo = 1;
 }
 
 
